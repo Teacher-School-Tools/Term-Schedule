@@ -309,16 +309,49 @@ def gen_calendar(df, fig=None, ax=None, config_settings=default_settings):
 
     return fig, ax
 
-if __name__ == "__main__":
-    with open(LESSON_FILE, "r", encoding="utf-8") as f:
 
-        lessons = load_lessons(f.read())
+def parse_settings(text):
+    tmp_dict = {}
+    bad_chars = ['\xd7', '\n', '\x99m', "\xf0"] 
+    for i in bad_chars:
+        text = text.replace(i, "")
 
-    with open(HOLIDAY_FILE, "r", encoding="utf-8") as f:
-        pd_days = load_misc_days(f.read())
+    for line in text.lower().strip().split(','):
+        tmp_line = line.split(" : ")
+        print(tmp_line)
 
-    df = create_schedule(lessons, pd_days, default_settings)
+        if len(tmp_line)==1:
+            break
+    
+        setting_name, setting_value = tmp_line[0].strip(), tmp_line[1].strip()
+        
+        if setting_value.isnumeric():
+            tmp_dict[setting_name.strip()] = int(setting_value.strip())
 
-    fig, ax = gen_calendar(df)
+        elif setting_value=="true" or setting_value=="false":
+            if setting_value=="true":
+                tmp_dict[setting_name] = True
+            else:
+                tmp_dict[setting_name] = False
 
-    print(df)
+        elif "#" in setting_value:
+            tmp_dict[setting_name] = setting_value
+
+        else:
+            tmp_dict[setting_name] = setting_value
+
+    return tmp_dict
+
+# if __name__ == "__main__":
+#     with open(LESSON_FILE, "r", encoding="utf-8") as f:
+
+#         lessons = load_lessons(f.read())
+
+#     with open(HOLIDAY_FILE, "r", encoding="utf-8") as f:
+#         pd_days = load_misc_days(f.read())
+
+#     df = create_schedule(lessons, pd_days, default_settings)
+
+#     fig, ax = gen_calendar(df)
+
+#     print(df)

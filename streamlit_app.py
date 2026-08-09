@@ -1,5 +1,5 @@
 import streamlit as st
-from term_schedule import load_lessons, load_misc_days, create_schedule, gen_calendar
+from term_schedule import load_lessons, load_misc_days, create_schedule, gen_calendar, parse_settings
 
 st.set_page_config(layout="wide")
 
@@ -8,31 +8,19 @@ Diagnostic Quiz [#aa6767]
 Polynomials [3]
 Exponentials [2]
 Polynomial Quiz [q]
-Modeling Linear Equations
-Solving Linear Systems
-Linear Word Problems
+Factoring
+Completing the Square [2]
+Word Problems [2]
 Review
-Linear Systems Test [t]
-Introduction to Quadratics
-Factoring by Grouping [2]
-Factoring by axc + b [2]
-Vertex Form
-Quiz [q]
-Factoring Word Problems [3]
 Quadratics Test [t]
 Introduction to Trigonometry
+Angle Patterns
+Right Angle Triangles
 """
 
-sample_holidays = r"""2026-10-12 : PD Day 1
-2026-12-21 : Christmas Break
-2026-12-22 : Christmas Break
-2026-12-23 : Christmas Break
-2026-12-24 : Christmas Break
-2026-12-28 : Christmas Break
-2026-12-29 : Christmas Break
-2026-12-30 : Christmas Break
-2026-12-31 : Christmas Break
-2027-01-01 : Christmas Break
+sample_holidays = r"""2026-9-11 : PD Day 1
+2026-9-18 : Field Trip
+2026-9-25 : School Assembly
 """
 
 webpage_text = rf"""
@@ -58,7 +46,10 @@ It should look something like the following.
 side = st.sidebar
 
 with side:
-    st.markdown("# Advanced Settings")
+    st.markdown("""
+    # Advanced Settings
+    Warning: Changing some of the sizes can and will break the calendar! Do so at your own risk!
+    """)
     reset_button = st.button("Reset Settings")
     STAT_HOLIDAY_COLOUR = st.color_picker("Select the colour for statutory holidays", 
                                                 key="1", value="#FFB6A6")
@@ -73,32 +64,58 @@ with side:
                                                 key="5", value="#FFC349")
     
     gap_size = st.number_input("Gap size",          key="6", value=50)
-    round_size = st.number_input("Round size",      key="7", value=20)
+    round_size = st.number_input("Round size",      key="7", value=50)
     rect_x_size = st.number_input("Cell x-size",    key="8", value=1000,)
     rect_y_size = st.number_input("Cell y-size",    key="9", value=rect_x_size//2)
     cell_border_size = st.number_input("Cell border size", key="10", value=2)
     figure_border_size = st.number_input("Border Size",    key="11", value=3)
     dark_mode_check = st.checkbox("Darkmode",       key="12", value=False)
 
+    st.markdown(fr"""
+    Copy the following if you want to resuse the same settings in your next session, or if you refresh the page.
+    ```
+    weekends : False,
+    gap : {gap_size},
+    round : {round_size},
+    rect_x : {rect_x_size},
+    rect_y : {rect_y_size},
+    cell_border : {cell_border_size},
+    stat_holiday_colour : {STAT_HOLIDAY_COLOUR.capitalize()},
+    school_holiday_colour : {SCHOOL_HOLIDAY_COLOUR.capitalize()},
+    default_day_colour : {DEFAULT_INSTR_DAY_COLOUR.capitalize()},
+    default_quiz_colour : {DEFAULT_QUIZ_COLOUR.capitalize()},
+    default_test_colour : {DEFAULT_TEST_COLOUR.capitalize()},
+    figure_border_size : {figure_border_size},
+    dark_mode : {dark_mode_check},
+    ```
+    """)
+
+    custom_settings = st.text_area("Paste your settings from the previous session to use them again.")
+
     if reset_button:
         st.session_state.clear()
         st.rerun()
 
-settings = {
-    "weekends" : False,
-    "gap" : gap_size,
-    "round" : round_size,
-    "rect_x" : rect_x_size,
-    "rect_y" : rect_y_size,
-    "cell_border" : cell_border_size,
-    "stat_holiday_colour" : STAT_HOLIDAY_COLOUR.capitalize(),
-    "school_holiday_colour" : SCHOOL_HOLIDAY_COLOUR.capitalize(),
-    "default_day_colour" : DEFAULT_INSTR_DAY_COLOUR.capitalize(),
-    "default_quiz_colour" : DEFAULT_QUIZ_COLOUR.capitalize(),
-    "default_test_colour" : DEFAULT_TEST_COLOUR.capitalize(),
-    "figure_border_size" : figure_border_size,
-    "dark_mode" : dark_mode_check,
-}
+if custom_settings:
+    settings = parse_settings(custom_settings)
+
+else:
+    settings = {
+        "weekends" : False,
+        "gap" : gap_size,
+        "round" : round_size,
+        "rect_x" : rect_x_size,
+        "rect_y" : rect_y_size,
+        "cell_border" : cell_border_size,
+        "stat_holiday_colour" : STAT_HOLIDAY_COLOUR.capitalize(),
+        "school_holiday_colour" : SCHOOL_HOLIDAY_COLOUR.capitalize(),
+        "default_day_colour" : DEFAULT_INSTR_DAY_COLOUR.capitalize(),
+        "default_quiz_colour" : DEFAULT_QUIZ_COLOUR.capitalize(),
+        "default_test_colour" : DEFAULT_TEST_COLOUR.capitalize(),
+        "figure_border_size" : figure_border_size,
+        "dark_mode" : dark_mode_check,
+    }
+
 
 import matplotlib.pyplot as plt
 plt.rc('font', size=10)
@@ -139,7 +156,7 @@ with mid_column:
 
     df = create_schedule(loaded_lessons, misc_days, settings, start_date=str(start_date))
 
-    st.markdown("Below is a table of your data.")
+    st.markdown("Below is a table of your data. You can use this as a general guideline for your students, excluding the dates, as it may change from term-to-term.")
     st.dataframe(df)
 
 # calendar generation
@@ -153,6 +170,8 @@ if not loaded_lessons or not misc_days:
 
 else:
     with right_column:
-        st.markdown("## Output")
+        st.markdown("""
+        ## Output
+        To save the calendar, simply right click the image and click "Save image as...\"""""")
         main()
 
