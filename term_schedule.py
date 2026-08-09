@@ -60,15 +60,21 @@ default_settings = {
 
 def load_misc_days(text):
     other_dates = {}
-    try:
-        for i in text.strip().split("\n"):
-            tmp = i.split(" : ")
-
-            tmp_date = datetime.strptime(tmp[0], r"%Y-%m-%d")
-            
-            other_dates[tmp_date.date()] = tmp[1]
-    except:
+    if text=="":
         return other_dates
+    
+    for i in text.strip().split("\n"):
+        tmp = i.split(" : ")
+        if len(tmp) != 2:
+            pass
+
+        try:
+            tmp_date = datetime.strptime(tmp[0], r"%Y-%m-%d")
+            other_dates[tmp_date.date()] = tmp[1]
+
+        except ValueError:
+            pass
+
     return other_dates
 # ==============================
 # function for parsing text lines from lessons, regex is a nightmare and i will never use regex ever again
