@@ -44,8 +44,8 @@ It should look something like the following.
 ```"""
 
 # calendar generation helper function
-def main():
-    fig, ax = gen_calendar(df, config_settings=settings)
+def main(data, passed_settings):
+    fig, ax = gen_calendar(data, config_settings=passed_settings)
 
     st.pyplot(fig, width="stretch")
 
@@ -137,7 +137,7 @@ plt.rc('font', size=10)
 plt.rc('axes', titlesize=20)
 
 # main content - three columns
-st.markdown("# Term Planner", text_alignment="center")
+st.header("Term Planner", text_alignment="center", divider=True)
 
 left_column, mid_column, right_column  = st.columns(3, gap="medium")
 
@@ -166,12 +166,12 @@ with mid_column:
 
     df = create_schedule(loaded_lessons, misc_days, settings, start_date=str(start_date))
 
-    st.markdown("Below is a table of your data. You can use this as a general guideline for yourself.")
+    st.markdown("Below is a table of your data. You can use this as a general guideline for yourself, or as a printout for your students.")
     st.dataframe(df.iloc[:,1:4])
 
 with right_column:
     st.markdown("""
     ## Output
     To save the calendar, simply right click the image and click "Save image as...\"""""")
-    main()
+    main(data=df, passed_settings=settings)
 
