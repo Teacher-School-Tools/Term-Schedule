@@ -57,7 +57,6 @@ with side:
     disable_mode = False
     st.markdown("""
     # Advanced Settings
-    Warning: Changing some of the sizes can and will break the calendar! Do so at your own risk!
     """)
     reset_button = st.button("Reset Settings")
     STAT_HOLIDAY_COLOUR = st.color_picker("Select the colour for statutory holidays", 
@@ -73,17 +72,21 @@ with side:
     DEFAULT_QUIZ_COLOUR = st.color_picker("Select the colour for test days", 
                                                 key="5", value="#FFC349")
     
-    gap_size = st.number_input("Gap size",          key="6", value=50)
-    round_size = st.number_input("Round size",      key="7", value=50)
-    rect_x_size = st.number_input("Cell x-size",    key="8", value=1000,)
-    rect_y_size = st.number_input("Cell y-size",    key="9", value=rect_x_size//2)
-    cell_border_size = st.number_input("Cell border size", key="10", value=2)
-    figure_border_size = st.number_input("Border Size",    key="11", value=3)
-    text_offset_x = st.number_input("Number Offset x",  key="12", value=0)
-    text_offset_y = st.number_input("Number Offset y",  key="13", value=0)
-    dark_mode_check = st.checkbox("Darkmode",       key="14", value=False)
+    expand = st.expander("""Size Settings""")
 
-    custom_settings = st.text_area("Paste your settings from the previous session to use them again. If there are settings here, then the controls above won't work!")
+    with expand:
+        st.markdown("Warning: Changing some of the sizes can and will break the calendar! Do so at your own risk!")
+        gap_size = st.number_input("Gap size",          key="6", value=50)
+        round_size = st.number_input("Round size",      key="7", value=50)
+        rect_x_size = st.number_input("Cell x-size",    key="8", value=1000,)
+        rect_y_size = st.number_input("Cell y-size",    key="9", value=rect_x_size//2)
+        cell_border_size = st.number_input("Cell border size", key="10", value=2)
+        figure_border_size = st.number_input("Border Size",    key="11", value=3)
+        text_offset_x = st.number_input("Number Offset x",  key="12", value=0)
+        text_offset_y = st.number_input("Number Offset y",  key="13", value=0)
+        dark_mode_check = st.checkbox("Darkmode",       key="14", value=False)
+
+    custom_settings = st.text_area("Paste your settings from the previous session to use them again. If there are settings here, they will be prioritized over the settings above!")
 
     if custom_settings:
         disable_mode = True
