@@ -39,9 +39,6 @@ SCHOOL_HOLIDAY_COLOUR = "#F1B598"
 DEFAULT_INSTR_DAY_COLOUR = "#BEDAE3"
 DEFAULT_QUIZ_COLOUR = "#7A26AE"
 DEFAULT_TEST_COLOUR = "#AA0000"
-    
-# plt.rcParams['font.family'] = 'Handwriting'
-# plt.rc('font', size=16)
 
 default_settings = {
     "weekends" : False,
@@ -56,6 +53,8 @@ default_settings = {
     "default_quiz_colour" : DEFAULT_QUIZ_COLOUR,
     "default_test_colour" : DEFAULT_TEST_COLOUR,
     "figure_border_size" : 2,
+    "text_offset_x" : 0,
+    "text_offset_y" : 0,
     "dark_mode" : True,
 }
 
@@ -281,8 +280,8 @@ def gen_calendar(df, fig=None, ax=None, config_settings=default_settings):
             )
 
         ax.add_patch(rect)
-        ax.text(x + config_settings["gap"] * .5,
-                y + config_settings["gap"]*2,
+        ax.text(x + config_settings["gap"] * .5 + config_settings["text_offset_x"],
+                y + config_settings["gap"]*2 + config_settings["text_offset_y"],
                 f"{row.Date.day}",
                 fontweight="bold",
                 fontsize=10,

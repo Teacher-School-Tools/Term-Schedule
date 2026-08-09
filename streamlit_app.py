@@ -47,22 +47,24 @@ It should look something like the following.
 def main():
     fig, ax = gen_calendar(df, config_settings=settings)
 
-    st.pyplot(fig,use_container_width=False)
+    st.pyplot(fig, width="stretch")
 
 # STREAMLIT CONTENT STARTS BELOW HERE
 
 # sidebar content
 side = st.sidebar
 with side:
+    disable_mode = False
     st.markdown("""
     # Advanced Settings
     Warning: Changing some of the sizes can and will break the calendar! Do so at your own risk!
     """)
     reset_button = st.button("Reset Settings")
     STAT_HOLIDAY_COLOUR = st.color_picker("Select the colour for statutory holidays", 
-                                                key="1", value="#FFB6A6")
+                                                key="1", value="#FFB6A6",
+                                                )
     SCHOOL_HOLIDAY_COLOUR = st.color_picker("Select the colour for school holidays", 
-                                                key="2", value="#FFEBD3")
+                                                key="2", value="#399E4A")
     DEFAULT_INSTR_DAY_COLOUR = st.color_picker("Select the colour for default instructional days", 
                                                 key="3", value="#67A2C5")
 
@@ -77,53 +79,55 @@ with side:
     rect_y_size = st.number_input("Cell y-size",    key="9", value=rect_x_size//2)
     cell_border_size = st.number_input("Cell border size", key="10", value=2)
     figure_border_size = st.number_input("Border Size",    key="11", value=3)
-    dark_mode_check = st.checkbox("Darkmode",       key="12", value=False)
+    text_offset_x = st.number_input("Number Offset x",  key="12", value=0)
+    text_offset_y = st.number_input("Number Offset y",  key="13", value=0)
+    dark_mode_check = st.checkbox("Darkmode",       key="14", value=False)
+
+    custom_settings = st.text_area("Paste your settings from the previous session to use them again. If there are settings here, then the controls above won't work!")
+
+    if custom_settings:
+        disable_mode = True
+        settings = parse_settings(custom_settings)
+        # for k in st.session_state.keys():
+        #     st.session_state[k] = not st.session_state[k].disabled
+
+
+    else:
+        disable_mode = False
+        settings = {
+            "weekends" : False,
+            "gap" : gap_size,
+            "round" : round_size,
+            "rect_x" : rect_x_size,
+            "rect_y" : rect_y_size,
+            "cell_border" : cell_border_size,
+            "stat_holiday_colour" : STAT_HOLIDAY_COLOUR.capitalize(),
+            "school_holiday_colour" : SCHOOL_HOLIDAY_COLOUR.capitalize(),
+            "default_day_colour" : DEFAULT_INSTR_DAY_COLOUR.capitalize(),
+            "default_quiz_colour" : DEFAULT_QUIZ_COLOUR.capitalize(),
+            "default_test_colour" : DEFAULT_TEST_COLOUR.capitalize(),
+            "figure_border_size" : figure_border_size,
+            "text_offset_x" : text_offset_x,
+            "text_offset_y" : text_offset_y,
+            "dark_mode" : dark_mode_check,
+        }
+
+    tmp = ""
+
+    for k,v in zip(settings.keys(), settings.values()):
+        tmp += f"{k} : {v},"
 
     st.markdown(fr"""
     Copy the following and save it somewhere if you want to reuse the same settings in your next session, or if you refresh the page.
     ```
-    weekends : False,
-    gap : {gap_size},
-    round : {round_size},
-    rect_x : {rect_x_size},
-    rect_y : {rect_y_size},
-    cell_border : {cell_border_size},
-    stat_holiday_colour : {STAT_HOLIDAY_COLOUR.capitalize()},
-    school_holiday_colour : {SCHOOL_HOLIDAY_COLOUR.capitalize()},
-    default_day_colour : {DEFAULT_INSTR_DAY_COLOUR.capitalize()},
-    default_quiz_colour : {DEFAULT_QUIZ_COLOUR.capitalize()},
-    default_test_colour : {DEFAULT_TEST_COLOUR.capitalize()},
-    figure_border_size : {figure_border_size},
-    dark_mode : {dark_mode_check},
+    {tmp}
     ```
     """)
-
-    custom_settings = st.text_area("Paste your settings from the previous session to use them again.")
 
     if reset_button:
         for key in list(st.session_state.keys()):
             del st.session_state[key]
         st.rerun()
-
-if custom_settings:
-    settings = parse_settings(custom_settings)
-
-else:
-    settings = {
-        "weekends" : False,
-        "gap" : gap_size,
-        "round" : round_size,
-        "rect_x" : rect_x_size,
-        "rect_y" : rect_y_size,
-        "cell_border" : cell_border_size,
-        "stat_holiday_colour" : STAT_HOLIDAY_COLOUR.capitalize(),
-        "school_holiday_colour" : SCHOOL_HOLIDAY_COLOUR.capitalize(),
-        "default_day_colour" : DEFAULT_INSTR_DAY_COLOUR.capitalize(),
-        "default_quiz_colour" : DEFAULT_QUIZ_COLOUR.capitalize(),
-        "default_test_colour" : DEFAULT_TEST_COLOUR.capitalize(),
-        "figure_border_size" : figure_border_size,
-        "dark_mode" : dark_mode_check,
-    }
 
 import matplotlib.pyplot as plt
 plt.rc('font', size=10)
