@@ -33,7 +33,7 @@ Simply provide a text form of your lesson plans in order, similar to the followi
 ```
 {sample_lessons}
 ```
-Note a couple different features above. Numbers in square brackets such as `[3]` indicate a lesson which spans more than one day. Hex-codes within square brackets such as `[#aa6767]` indicate a custom colour for the specific day. You can choose any colour provided that you know the hex-code for. You can also indicate if a day is a quiz or test day with `[q]` or `[t]`
+Note a couple different **features** above. Numbers in square brackets such as `[3]` indicate a lesson which spans more than one day. Hex-codes within square brackets such as `[#aa6767]` indicate a custom colour for the specific day. You can choose any colour provided that you know the hex-code for. You can also indicate if a day is a quiz or test day with `[q]` or `[t]`
 
 The second thing you need is a list of the PD days for your specific board. I may implement a library of schoolboard days in another iteration.
 
@@ -157,29 +157,21 @@ with mid_column:
         loaded_lessons = load_lessons(lessons_input, settings)
 
     with col2:
-        holidays = st.text_area("Input your school holidays / flex days here:",
+        holidays = st.text_area("Input your school holidays here:",
                                 value=sample_holidays)
         
-        misc_days = None
-        try:
-            misc_days = load_misc_days(holidays)
-        except ValueError:
-            pass
+        misc_days = load_misc_days(holidays)
 
     start_date = st.date_input("Select the starting date for the term.", value="2026-09-07")
 
     df = create_schedule(loaded_lessons, misc_days, settings, start_date=str(start_date))
 
-    st.markdown("Below is a table of your data. You can use this as a general guideline for your students, excluding the dates, as it may change from term-to-term.")
-    st.dataframe(df)
+    st.markdown("Below is a table of your data. You can use this as a general guideline for yourself.")
+    st.dataframe(df.iloc[:,1:4])
 
-if not loaded_lessons or not misc_days:
-    pass
-
-else:
-    with right_column:
-        st.markdown("""
-        ## Output
-        To save the calendar, simply right click the image and click "Save image as...\"""""")
-        main()
+with right_column:
+    st.markdown("""
+    ## Output
+    To save the calendar, simply right click the image and click "Save image as...\"""""")
+    main()
 
