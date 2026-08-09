@@ -43,8 +43,16 @@ It should look something like the following.
 {sample_holidays}
 ```"""
 
-side = st.sidebar
+# calendar generation helper function
+def main():
+    fig, ax = gen_calendar(df, config_settings=settings)
 
+    st.pyplot(fig,use_container_width=False)
+
+# STREAMLIT CONTENT STARTS BELOW HERE
+
+# sidebar content
+side = st.sidebar
 with side:
     st.markdown("""
     # Advanced Settings
@@ -72,7 +80,7 @@ with side:
     dark_mode_check = st.checkbox("Darkmode",       key="12", value=False)
 
     st.markdown(fr"""
-    Copy the following if you want to resuse the same settings in your next session, or if you refresh the page.
+    Copy the following and save it somewhere if you want to reuse the same settings in your next session, or if you refresh the page.
     ```
     weekends : False,
     gap : {gap_size},
@@ -93,7 +101,8 @@ with side:
     custom_settings = st.text_area("Paste your settings from the previous session to use them again.")
 
     if reset_button:
-        st.session_state.clear()
+        for key in list(st.session_state.keys()):
+            del st.session_state[key]
         st.rerun()
 
 if custom_settings:
@@ -116,11 +125,11 @@ else:
         "dark_mode" : dark_mode_check,
     }
 
-
 import matplotlib.pyplot as plt
 plt.rc('font', size=10)
 plt.rc('axes', titlesize=20)
 
+# main content - three columns
 st.markdown("# Term Planner", text_alignment="center")
 
 left_column, mid_column, right_column  = st.columns(3, gap="medium")
@@ -129,11 +138,9 @@ with left_column:
 
     st.markdown(webpage_text)
 
-# sidebar content
-
 with mid_column:
     st.markdown("## Inputs")
-# main content - columns
+    
     col1, col2 = st.columns(2)
 
     with col1:
@@ -158,12 +165,6 @@ with mid_column:
 
     st.markdown("Below is a table of your data. You can use this as a general guideline for your students, excluding the dates, as it may change from term-to-term.")
     st.dataframe(df)
-
-# calendar generation
-def main():
-    fig, ax = gen_calendar(df, config_settings=settings)
-
-    st.pyplot(fig,use_container_width=False)
 
 if not loaded_lessons or not misc_days:
     pass
