@@ -1,11 +1,6 @@
 import streamlit as st
-import os, sys
 
-module_dir = os.path.abspath("/pages")
-
-sys.path.append(module_dir)
-
-from term_schedule import load_lessons, load_misc_days, create_schedule, gen_calendar, parse_settings
+from pages.term_schedule import load_lessons, load_misc_days, create_schedule, gen_calendar, parse_settings
 
 st.set_page_config(layout="wide")
 
