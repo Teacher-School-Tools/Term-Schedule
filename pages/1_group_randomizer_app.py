@@ -63,7 +63,7 @@ student_text = st.text_area(
         "Diana\n"
         "Ethan"
     ),
-    height=250
+    height=100
 )
 
 
@@ -260,7 +260,7 @@ if st.session_state.groups:
 
                     st.markdown(
                         f'<div class="student-name">'
-                        f'• {student}'
+                        f'{student}'
                         f'</div>',
                         unsafe_allow_html=True
                     )
